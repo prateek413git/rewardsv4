@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { FaCheckCircle, FaGift, FaStar, FaBook, FaBroom, FaMusic, FaPizzaSlice } from "react-icons/fa";
+import { FaCheckCircle, FaGift, FaStar, FaBook, FaBroom, FaPizzaSlice } from "react-icons/fa";
 
 export default function RewardsApp() {
   const [points, setPoints] = useState(0);
@@ -13,7 +13,6 @@ export default function RewardsApp() {
   const [newReward, setNewReward] = useState("");
   const [newRewardCost, setNewRewardCost] = useState(0);
 
-  // Load data
   useEffect(() => {
     const savedPoints = localStorage.getItem("points");
     const savedLevel = localStorage.getItem("level");
@@ -23,32 +22,33 @@ export default function RewardsApp() {
 
     if (savedPoints) setPoints(JSON.parse(savedPoints));
     if (savedLevel) setLevel(JSON.parse(savedLevel));
-    if (savedHabits)
-      setHabits(JSON.parse(savedHabits));
-    else
-      setHabits([
-        { id: 1, text: "Brush teeth", points: 2, color: "bg-yellow-100", icon: <FaCheckCircle /> },
-        { id: 2, text: "Make bed", points: 3, color: "bg-green-100", icon: <FaBroom /> },
-        { id: 3, text: "Read a book", points: 5, color: "bg-blue-100", icon: <FaBook /> },
-        { id: 4, text: "Help clean up toys", points: 3, color: "bg-pink-100", icon: <FaBroom /> },
-        { id: 5, text: "Practice Maths", points: 4, color: "bg-purple-100", icon: <FaMusic /> },
-        { id: 6, text: "Set/Clean the table", points: 2, color: "bg-orange-100", icon: <FaPizzaSlice /> },
-      ]);
-    if (savedRewards)
-      setRewards(JSON.parse(savedRewards));
-    else
-      setRewards([
-        { id: 1, text: "Choose dessert", cost: 10, color: "bg-purple-100", icon: <FaGift /> },
-        { id: 2, text: "Extra screen time (15 min)", cost: 15, color: "bg-red-100", icon: <FaGift /> },
-        { id: 3, text: "Pick movie night movie", cost: 20, color: "bg-orange-100", icon: <FaGift /> },
-        { id: 4, text: "Trip to ice cream shop", cost: 25, color: "bg-pink-200", icon: <FaGift /> },
-        { id: 5, text: "Sticker reward", cost: 5, color: "bg-yellow-200", icon: <FaStar /> },
-        { id: 6, text: "Choose dinner", cost: 15, color: "bg-green-200", icon: <FaPizzaSlice /> },
-      ]);
+    if (savedHabits) setHabits(JSON.parse(savedHabits));
+    else setHabits([
+      { id: 1, text: "Brush teeth", points: 2, color: "bg-yellow-100", icon: <FaCheckCircle /> },
+      { id: 2, text: "Make bed", points: 3, color: "bg-green-100", icon: <FaBroom /> },
+      { id: 3, text: "Read a book", points: 5, color: "bg-blue-100", icon: <FaBook /> },
+      { id: 4, text: "Help clean up toys", points: 3, color: "bg-pink-100", icon: <FaBroom /> },
+      { id: 5, text: "Do a small chore (fold laundry)", points: 3, color: "bg-lavender-100", icon: <FaBroom /> },
+      { id: 6, text: "Set the table", points: 2, color: "bg-orange-100", icon: <FaPizzaSlice /> },
+      { id: 7, text: "Feed pet", points: 2, color: "bg-teal-100", icon: <FaBroom /> },
+      { id: 8, text: "Water plants", points: 2, color: "bg-green-200", icon: <FaBroom /> },
+      { id: 9, text: "Say 'please' & 'thank you'", points: 1, color: "bg-yellow-200", icon: <FaStar /> },
+      { id: 10, text: "Practice maths activity", points: 4, color: "bg-purple-100", icon: <FaStar /> },
+    ]);
+    if (savedRewards) setRewards(JSON.parse(savedRewards));
+    else setRewards([
+      { id: 1, text: "Choose dessert", cost: 10, color: "bg-purple-100", icon: <FaGift /> },
+      { id: 2, text: "Extra screen time (15 min)", cost: 15, color: "bg-red-100", icon: <FaGift /> },
+      { id: 3, text: "Pick movie night movie", cost: 20, color: "bg-orange-100", icon: <FaGift /> },
+      { id: 4, text: "Trip to ice cream shop", cost: 25, color: "bg-pink-200", icon: <FaGift /> },
+      { id: 5, text: "Choose dinner", cost: 15, color: "bg-green-200", icon: <FaPizzaSlice /> },
+      { id: 6, text: "Small toy", cost: 30, color: "bg-blue-200", icon: <FaGift /> },
+      { id: 7, text: "Craft activity with parent", cost: 20, color: "bg-teal-200", icon: <FaStar /> },
+      { id: 8, text: "Dance party (10 min)", cost: 8, color: "bg-pink-300", icon: <FaStar /> },
+    ]);
     if (savedHistory) setHistory(JSON.parse(savedHistory));
   }, []);
 
-  // Save data
   useEffect(() => {
     localStorage.setItem("points", JSON.stringify(points));
     localStorage.setItem("level", JSON.stringify(level));
@@ -57,7 +57,6 @@ export default function RewardsApp() {
     localStorage.setItem("history", JSON.stringify(history));
   }, [points, level, habits, rewards, history]);
 
-  // Level up every 20 points
   useEffect(() => {
     const newLevel = Math.floor(points / 20) + 1;
     if (newLevel > level) setLevel(newLevel);
@@ -65,41 +64,27 @@ export default function RewardsApp() {
 
   const completeHabit = (habit) => {
     setPoints(points + habit.points);
-    const newEntry = {
-      text: `Completed "${habit.text}"`,
-      points: habit.points,
-      date: new Date().toLocaleString(),
-    };
-    setHistory([newEntry, ...history]);
+    setHistory([{ text: `Completed "${habit.text}"`, points: habit.points, date: new Date().toLocaleString() }, ...history]);
   };
 
   const redeemReward = (reward) => {
     if (points >= reward.cost) {
       setPoints(points - reward.cost);
-      const newEntry = {
-        text: `Redeemed "${reward.text}"`,
-        points: -reward.cost,
-        date: new Date().toLocaleString(),
-      };
-      setHistory([newEntry, ...history]);
-    } else {
-      alert("Not enough points!");
-    }
+      setHistory([{ text: `Redeemed "${reward.text}"`, points: -reward.cost, date: new Date().toLocaleString() }, ...history]);
+    } else alert("Not enough points!");
   };
 
   const addHabit = () => {
     if (newHabit.trim() !== "" && newHabitPoints > 0) {
       setHabits([...habits, { id: Date.now(), text: newHabit, points: newHabitPoints, color: "bg-teal-100", icon: <FaStar /> }]);
-      setNewHabit("");
-      setNewHabitPoints(0);
+      setNewHabit(""); setNewHabitPoints(0);
     }
   };
 
   const addReward = () => {
     if (newReward.trim() !== "" && newRewardCost > 0) {
       setRewards([...rewards, { id: Date.now(), text: newReward, cost: newRewardCost, color: "bg-purple-200", icon: <FaGift /> }]);
-      setNewReward("");
-      setNewRewardCost(0);
+      setNewReward(""); setNewRewardCost(0);
     }
   };
 
@@ -149,17 +134,15 @@ export default function RewardsApp() {
         </div>
       </div>
 
-      {/* Points history */}
+      {/* History */}
       <div className="bg-white shadow-2xl rounded-3xl p-4 mb-8">
         <h2 className="text-3xl font-bold mb-4 text-blue-700">📜 Points History</h2>
-        {history.length === 0 ? (
-          <p>No points collected yet.</p>
-        ) : (
+        {history.length === 0 ? <p>No points collected yet.</p> : (
           <div className="max-h-72 overflow-y-auto space-y-2">
             {history.map((entry, idx) => (
-              <div key={idx} className={`flex justify-between items-center p-2 rounded-xl ${entry.points > 0 ? "bg-green-100" : "bg-red-100"} animate-fade-in`}>
-                <span className="flex items-center gap-2">{entry.points > 0 ? <FaCheckCircle className="text-green-600" /> : <FaGift className="text-pink-600" />}{entry.text}</span>
-                <span className="font-bold">{entry.points > 0 ? `+${entry.points}` : entry.points}</span>
+              <div key={idx} className={`flex justify-between items-center p-2 rounded-xl ${entry.points>0?'bg-green-100':'bg-red-100'} animate-fade-in`}>
+                <span className="flex items-center gap-2">{entry.points>0?<FaCheckCircle className="text-green-600"/>:<FaGift className="text-pink-600"/>} {entry.text}</span>
+                <span className="font-bold">{entry.points>0?`+${entry.points}`:entry.points}</span>
               </div>
             ))}
           </div>
@@ -168,4 +151,5 @@ export default function RewardsApp() {
     </div>
   );
 }
+
 
